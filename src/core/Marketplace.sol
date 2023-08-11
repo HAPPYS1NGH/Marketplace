@@ -4,13 +4,29 @@ pragma solidity ^0.8.20;
 import {Product} from "../static/Product.sol";
 import {Counters} from "@openzeppelin/contracts/utils/Counters.sol";
 import {ProductNFT} from "../helpers/ProductNFT.sol";
+import {ByteHasher} from "../helpers/ByteHasher.sol";
+import {IWorldID} from "../interfaces/IWorldID.sol";
 
 contract Marketplace {
+    using Counters for Counters.Counter;
+    using ByteHasher for bytes;
+
+    error InvalidNullifier();
+
     address public owner;
     ProductNFT public productNFT;
     mapping(uint256 => Product) public products;
+    /// @dev The World ID instance that will be used for verifying proofs
+    IWorldID internal immutable worldId;
 
-    using Counters for Counters.Counter;
+    /// @dev The contract's external nullifier hash
+    uint256 internal immutable externalNullifier;
+
+    /// @dev The World ID group ID (always 1)
+    uint256 internal immutable groupId = 0;
+
+    /// @dev Whether a nullifier hash has been used already. Used to guarantee an action is only performed once by a single person
+    mapping(uint256 => bool) internal nullifierHashes;
 
     Counters.Counter private _productCounterId;
 
@@ -25,12 +41,39 @@ contract Marketplace {
         _;
     }
 
-    constructor() {
+    constructor(IWorldID _worldId, string memory _appId, string memory _actionId) {
         owner = msg.sender;
         productNFT = new ProductNFT();
+        worldId = _worldId;
+        externalNullifier = abi.encodePacked(abi.encodePacked(_appId).hashToField(), _actionId).hashToField();
     }
 
-    function listProduct(string memory _name, string memory _description, uint256 _price, string memory uri) external {
+    function verifyAndExecute(
+        address signal,
+        uint256 root,
+        uint256 nullifierHash,
+        uint256[8] calldata proof,
+        string memory _name,
+        string memory _description,
+        uint256 _price,
+        string memory uri
+    ) public {
+        // First, we make sure this person hasn't done this before
+        if (nullifierHashes[nullifierHash]) revert InvalidNullifier();
+
+        // We now verify the provided proof is valid and the user is verified by World ID
+        worldId.verifyProof(
+            root, groupId, abi.encodePacked(signal).hashToField(), nullifierHash, externalNullifier, proof
+        );
+
+        // We now record the user has done this, so they can't do it again (proof of uniqueness)
+        nullifierHashes[nullifierHash] = true;
+        listProduct(_name, _description, _price, uri);
+        // Finally, execute your logic here, for example issue a token, NFT, etc...
+        // Make sure to emit some kind of event afterwards!
+    }
+
+    function listProduct(string memory _name, string memory _description, uint256 _price, string memory uri) public {
         require(_price > 0, "Price must be greater than 0");
         uint256 tokenId = _productCounterId.current();
         _productCounterId.increment();

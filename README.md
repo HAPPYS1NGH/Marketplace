@@ -8,6 +8,12 @@ Welcome to the Antique Marketplace documentation. This guide provides an overvie
 
 The Antique Marketplace is a decentralized platform for trading antique items securely and transparently. Built on the Ethereum blockchain using Solidity smart contracts, it integrates identity verification, dispute resolution, and NFT-based ownership for a seamless trading experience.
 
+
+### Vision
+
+The Antique Marketplace project aims to revolutionize the antique trade industry by providing a secure, efficient, and trust-driven platform for enthusiasts to discover, trade, and own valuable antiques. Through innovative technologies and user-centric features, the project enhances the antique trading experience and fosters a vibrant community of collectors and sellers.
+
+
 ### Smart Contracts
 
 1. **Marketplace.sol**: The core contract that manages product listings, purchases, transactions, and user credibility. It integrates with external identity verification and dispute resolution mechanisms.
@@ -15,6 +21,17 @@ The Antique Marketplace is a decentralized platform for trading antique items se
 2. **Product.sol**: A struct defining the properties of each antique product, including its ID, seller, name, description, price, buyer, transaction status, and scam detection.
 
 3. **ProductNFT.sol**: An ERC-721 token contract that represents ownership of antique products as NFTs. It handles minting, transferring, and burning NFTs.
+
+### Features
+
+1. **Identity Verification:** The project integrates with WorldCoin ID to verify users' identities, adding an extra layer of trust to the marketplace. Verified users can engage in transactions with confidence.
+
+2. **Secure NFT Storage:** Product information is stored off-chain using nft.storage, reducing gas costs and ensuring the authenticity of NFTs representing antique items.
+
+3. **Dispute Resolution:** Huddle01 is utilized for video conferencing-based dispute resolution. A mediator reviews evidence and makes fair decisions to resolve disputes between parties.
+
+4. **User Credibility:** The system employs a user credibility mechanism that assigns and updates credibility points based on successful transactions and actions within the marketplace.
+
 
 ### Functionality
 
@@ -44,12 +61,10 @@ The Antique Marketplace is a decentralized platform for trading antique items se
 
 4. In case of disputes, mediators resolve issues and update credibility scores.
 
+### Deployment
+The smart contracts are deployed on the Optimism layer-2 scaling solution, utilizing Ethereum's capabilities while minimizing transaction costs and latency.
+
 ### Conclusion
 
 The Antique Marketplace offers a secure and innovative way to trade antique items, utilizing blockchain technology, identity verification, and NFTs. By fostering trust and transparency, it transforms the world of antique trading.
-
-For detailed usage instructions and smart contract deployment, refer to the complete project documentation.
-
----
-
-Please expand and customize this outline with detailed information, usage examples, code snippets, and any additional components specific to your project.
+Certainly, here's a basic structure for documenting your project:

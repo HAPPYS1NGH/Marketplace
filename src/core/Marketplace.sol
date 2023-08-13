@@ -128,6 +128,8 @@ contract Marketplace {
 
     function resolveFailedTransaction(uint256 _productId, bool isScam) public {
         require(products[_productId].scam, "Product is not a scam");
+        require(msg.sender != products[_productId].buyer, "You are the buyer");
+        require(msg.sender != products[_productId].seller, "You are the seller");
         require(userCredibility[msg.sender] > 10, " You are not allowed to resolve this transaction");
         if (isScam) {
             userCredibility[products[_productId].seller]--;
